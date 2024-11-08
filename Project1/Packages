@@ -1,1 +1,53 @@
-:
+# Packages Script
+#
+# Welcome to the packages script, the goal for ths script is to handle the 
+# installation of the packages inside the "packages" file
+
+# ------------------------------------------------------------------------------------------
+#  Step 1: Packages to install
+#  - kakoune
+#  - tmux
+   
+   packages=(kakoune tmux)
+
+# ------------------------------------------------------------------------------------------
+   #Step 2: Package Manager
+   # We need to have pacman installed because it is needed to install the required packages,
+   # If pacman is not installed, the script won't be able to install any software
+    
+    if ! command -v pacman &> /dev/null; then 
+    	echo "Your system does not have Pacman installed"
+	exit 1
+    fi
+
+   #Step 2.5:(Optional) Installing pacman
+   # To install the Pacman Packagae Manage go to the following website
+   # 1. Downlaod and install Arch Linnux from "https://archlinux.org/download"
+   # 2. Set up the base system and package manager (pacman) as per the Arch Wiki
+   #
+# -----------------------------------------------------------------------------------------
+#
+   #Step 3:Install the packages 
+   
+   for package in "${packages[@]}"; do
+   	#Check if the packages are already installed
+	if pacman -Q "$package" &> /dev/null; then
+	   echo "$package is already installed."
+	else
+	   echo "Installing $package"
+	   pacman -S --noconfirm "$package"
+	  
+	  # After installing, check for any errors
+	   if [ $? -eq 0 ]; then
+	       # $? basically holds the exit status of the last executed command
+	       # 0 = succes other else error 
+	      echo "$package installed"
+	   else 
+	      echo "Error with installing tha packages"
+	   fi
+	fi
+    done 
+								
+		
+    
+

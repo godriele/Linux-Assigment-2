@@ -30,24 +30,24 @@
 # Step 2: Listing all the files and directories inside the cloned repository
 
 #   Now that we cloned the github repository, we need to see what files or directories is inside the clone rep
-#
-#   config_repo="$HOME/config_files"
-#
+
+   config_repo="$HOME/config_files"
+
 #   The following command will show us everything insde ~/config_files
 #
-    content_files=$(find ~/config_files -maxdepth 1 -mindepth 1-type d)
+   content_files=$(find "$config_repo" -maxdepth 1 -mindepth 1-type d)
 
     # Whats happening inside this code is that inside "directories" we are finding all the directories inside
     # the ~/config_files file with only looking 1 level deep, starting from one level below the root directory
 
 
-# -----------------------------------------------------------------------------------------------------------
+# ------------------------------------:-----------------------------------------------------------------------
 
 # step 3: Connecting symbolic links to our files 
 # # In this step we are creating a symbolic link for the bin and config directory and the .bashrc file
 
 
-  for contents in $content_files; do
+  for content in $content_files; do
 
       #Here we are getting the abosolute path of the directory
       dir=$(basename "$content_files")
