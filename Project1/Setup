@@ -1,0 +1,62 @@
+# System Setup Script 
+
+
+
+# Welcome to the system setup script, make sure you have done: 
+
+#   - Configuration
+#   - Packages 
+
+# files before starting going into this one
+# The main goal for this script is automate the setup process for a new system, in here 
+# you will be able to install the packages needed 
+
+# -------------------------------------------------------------------------------------
+# Step 1: Commant line Options
+
+  # This part will hnadle the user's input from the command line
+  # Will use 'getopts' to parse the command line options. 
+
+  while getopts ":p:c:" opt; do
+     case "$opt" in
+
+	# The -p option will install the packages
+  	p)
+	  bash ./Packages "$OPTARG"
+	  ;;
+
+	
+	# The -c option will install the Configuration
+	c)
+	  bash ./Configuration "$OPTARG"
+	  ;;
+
+
+	# This will hadle the invalid options
+	*)
+	 exit1
+	 ;;  
+
+     esac
+   done
+
+   # If the user didn't provide anything
+
+   if [[ -z "$OPTARG" ]]; then
+     echo "Please provide either option -c, -p or both"
+     exit 1
+   fi
+
+# ------------------------------------------------------------------------------------
+   
+   # Step 2: How to run the installing
+
+   # To install packages from the Packages File
+     # sudo ./setup -p Packages
+
+
+   # To run the Configuration file
+     # sudo ./setup -c Configuration
+ 
+   # To run both actions at once
+     # sudo ./setup -c Packages -c Configuration
