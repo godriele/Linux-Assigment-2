@@ -1,0 +1,190 @@
+#!/bin/bash
+
+# Goal: Create a new script to automatically add a new user to your system
+#  1. Specify the Shell:
+#  2. Create a Home directory: Set up a personal home directory for the new user
+#
+#  3. Copy Default Files: copy default settings and files from `/etc/skel` to the
+#  new user's home directory
+#  
+#  4. Add to Groups: Add the new user to specified groups, including a primary group
+#  that matches their username
+#
+#  5. Set a Password: Use the `psswd` utility to craeet a password for the new user
+#
+#
+#  Using getopts:
+#  1. Ask for the user information
+#  2. Create the user, specify shell and set the home directory
+#  3. Copy default configuration from a system directory to new user home 
+#  - option without colon )if its three)
+#  4. Prompt user for additional groups they want to be a part of
+#  5. Set the user's password
+
+
+
+# Create User Script
+
+
+# We have to make sure that the script is run with root priviliges
+
+ if [[ $EUID -ne 0 ]]; then 
+:      # -ne is checking if its not equal to 0 then it does not have sudo privileges
+     echo "Have to run this script with sudo"
+     exit 1
+	
+ fi 
+
+
+# -----------------------------------Menu------------------------------------------------------
+
+# Menu Function
+
+
+ Options () {
+    echo "Options"
+    echo " -s SHELL  - Specify the default shell for the user"
+    echo " -m        - Create a home directory for the new user"
+    echo " -g GROUPS - Groups to add the user into"
+    echo " -m        - option menu"
+
+]
+
+# Default values
+
+  home_dir=false 
+  # Setting this to false so that the home directory should not be created unless the users sets it
+  # using the -m option 
+
+  user_shell="/bin/bash"
+  # The most common shell on Linux, 
+
+  password=""
+  # The users will be able to set their passwrod
+
+  # Getting User input options and handling them using getopts
+  
+  while getopts "s:mg:h" option; do
+     case $option in 
+
+	s) 
+	  user_shell=$OPTARG 
+	  # this will give the user the option to specify the shell
+	  ;;
+
+	m) 
+	  home_dir=true 
+	  # option to create a home directory
+	  ;;
+
+
+	g) 
+	  groups=$OPTARG 
+	  # Option to specify the groups the user should belong to
+	  ;;
+
+	m) 
+	  echo "$Options"
+	  exit 0
+	  ;;
+	
+	:)
+	 echo "Option -$OPTARG needs an argument"
+	 # If the user left the option empty
+	 exit 1
+	 ;;
+
+
+	*)
+	 echo "Invalid option -$OPTARG"
+	 # if the user put in an invalid option
+	 exit 1
+	 ;;
+     
+    esac
+done
+
+# -------------------------Username---------------------------------------------------------
+
+shift $((OPTIND -1))
+# Removes all the options from the positional parameters so that the usernama can be accessed 
+# as the first positional argument
+
+
+# the first positional argument will be the username 
+username=$1
+
+# Check if the username is valid (not empty)
+if [[ -z $username ]]; then
+   echo "Please provide a username"
+   exit 1
+fi
+
+## * Double chcek not hundred percent sure if we supposed to this 
+
+
+# ------------------------Directoy-----------------------------------------------------------
+
+# if the user types in -m 
+# this will create their home directory 
+
+if [ "$home_dir" = true ]; then
+	mkdir "/home/$1"
+	cp -r /etc/skel/ * /home/$1
+	echo "Home directory created for $1 at /home/$1"
+fi
+
+# ------------------------Groups--------------------------------------------------------
+
+# Add the user to additional groups if they specify 
+
+if [ -n "$groups" ]; then
+    # -n will check if its non-empty
+
+    if usermod -aG "$groups" "$username"; then
+
+	# this will add the user to the specified group 
+	# and -aG will make sure the user is added without
+	# removing them from existing groups
+
+	    echo "$username was added to groups: $groups"
+    else
+	    echo "Error; failed to add $username to groups."
+	    exit 1
+   fi
+fi 
+
+# Not 100% this is how bro wants us to do it so 
+# double check everything again when checking again 
+
+# ------------------------Password-----------------------------------------------------
+
+# since we declared the password is empty 
+# I set the password if not provided as an argument
+
+if [ -z $password ]; then
+
+	echo "Enter a password for the user $username: "
+	read -s password
+	# -s will prevent the input from being displayed on the terminal
+	
+	if [ -z $password ]; then
+		echo "Error: Password is require"
+		exit1
+	fi
+fi
+
+
+# double check if it worked
+
+
+if [ $? -eq 0 ]; then
+     # checks if the last executed command worked (0 = success)
+
+	echo "Password for $usernmae has been successfully set" else 
+	echo "Error: failed to set the password for $username"
+	exit 1
+fi
+
+
+# -------------------------------------------------------------------------------------
