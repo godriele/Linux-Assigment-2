@@ -1,21 +1,13 @@
+#!/bin/bash
+
 # Configuration Setup Scrip!
-#
-# Welcome to the config setup, the main goal of this script is to automate the process of 
-# cloning a git repository that contains configuration files into a dierectory called 'config-fils'
-# It will also create symbolic links from the repository files to their intended locations
-#
-# This will save time and make the setup process faster and easier
-#
-# -----------------------------------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------------------
 # Step 1: Git 
-#  We need to make sure we have git installed because git will make it easy to synchronize repository
-#  between different machines. Git it is essential to cloning repositories
-#
-#  Run this command to check if you have git installed inside your binaries, and If you have it installed it
-#  will clone the repository we need
+
 
    if [[ -e /bin/git ]]; then
-
+		
 	   # If you system has git installed it will clone the repository inside the config_files directory
 
 	   git clone https://gitlab.com/cit2420/2420-as2-starting-files ~/config_files 
@@ -29,22 +21,15 @@
 # ----------------------------------------------------------------------------------------------------------
 # Step 2: Listing all the files and directories inside the cloned repository
 
-#   Now that we cloned the github repository, we need to see what files or directories is inside the clone rep
 
    config_repo="$HOME/config_files"
 
-#   The following command will show us everything insde ~/config_files
-#
    content_files=$(find "$config_repo" -maxdepth 1 -mindepth 1-type d)
 
-    # Whats happening inside this code is that inside "directories" we are finding all the directories inside
-    # the ~/config_files file with only looking 1 level deep, starting from one level below the root directory
 
-
-# ------------------------------------:-----------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # step 3: Connecting symbolic links to our files 
-# # In this step we are creating a symbolic link for the bin and config directory and the .bashrc file
 
 
   for content in $content_files; do
@@ -74,5 +59,3 @@
          echo "Symlink already exists: $target"
       fi 
 done
-# -------------------------------------------------------------------------------------------------------------
-#
