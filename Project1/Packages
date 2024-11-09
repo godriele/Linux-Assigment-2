@@ -1,7 +1,4 @@
 # Packages Script
-#
-# Welcome to the packages script, the goal for ths script is to handle the 
-# installation of the packages inside the "packages" file
 
 # ------------------------------------------------------------------------------------------
 #  Step 1: Packages to install
@@ -12,8 +9,6 @@
 
 # ------------------------------------------------------------------------------------------
    #Step 2: Package Manager
-   # We need to have pacman installed because it is needed to install the required packages,
-   # If pacman is not installed, the script won't be able to install any software
     
     if ! command -v pacman &> /dev/null; then 
     	echo "Your system does not have Pacman installed"
