@@ -27,7 +27,7 @@
 
 # We have to make sure that the script is run with root priviliges
 
-check_rook() {
+check_root() {
  if [[ $EUID -ne 0 ]]; then 
 :      # -ne is checking if its not equal to 0 then it does not have sudo privileges
      echo "Have to run this script with sudo"
@@ -134,7 +134,7 @@ fi
 
 if [ "$home_dir" = true ]; then
 	mkdir "/home/$1"
-	cp -r /etc/skel/ * /home/$1
+	cp -r /etc/skel/* /home/$1
 	echo "Home directory created for $1 at /home/$1"
 fi
 
@@ -174,18 +174,17 @@ if [ -z $password ]; then
 	
 	if [ -z $password ]; then
 		echo "Error: Password is require"
-		exit1
+		exit 1
 	fi
 fi
 
 
 # double check if it worked
-
-
 if [ $? -eq 0 ]; then
      # checks if the last executed command worked (0 = success)
 
-	echo "Password for $usernmae has been successfully set" else 
+	echo "Password for $username has been successfully set" 
+else 
 	echo "Error: failed to set the password for $username"
 	exit 1
 fi
