@@ -2,6 +2,13 @@
 
 #Setup Script
 
+# Before starting check if the script is run ass roo (EUID 0) or with sudo privileges
+
+if [ "EUID" -ne 0 ]; then
+	echo "Please run as or use 'sudo -E'."
+	exit 1
+fi
+
 # -------------------------------------------------------------------------------------
 # Step 1: Command line Options
 
@@ -20,7 +27,8 @@
 	  else
 	        echo "Cannot find the Package script" 
 		exit 1
-	  fi 
+	  fi
+
 	   ;; 
 
 	# The -c option will install the Configuration
@@ -28,10 +36,12 @@
 	   # Same with my -p code, it didnt have an error handling
 	  
 	  if [ -f "./Configuration" ]; then
-	  	bash ./Configuration "$OPTARG" || { echo "Error running Configuration script"; exit 1: }
+	  	bash ./Configuration "$OPTARG" || { echo "Error running Configuration script"; exit 1; }
 	  else
 	  	echo "Cannot find the Configuration script"
 		exit 1
+
+	  fi
 	  ;;
 
 
@@ -40,10 +50,11 @@
 
 	 echo "Invalid options: -$OPTARG"
 	 echo "Usage: -p for installing packages, -c for setting up configurations"
-	 exit1
+	 exit 1
+
 	 ;;  
 
-     esac
+    esac
    done
 
    # If the user didn't provide anything:
