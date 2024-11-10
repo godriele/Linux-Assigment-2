@@ -3,6 +3,8 @@
 # Setup Script
 
 # Before starting check if the script is run as root (EUID 0) or with sudo privileges
+# $EUID is 0 when running as root, so this will check if you have the correcet permissions
+#
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root or use 'sudo -E'."
     exit 1
@@ -14,7 +16,7 @@ fi
 # This part will handle the user's input from the command line.
 # Will use 'getopts' to parse the command line options.
 
-while getopts ":p:c:" opt; do
+while getopts "pc" opt; do
     case "$opt" in
         # The -p option will install the packages
         p)
@@ -40,7 +42,7 @@ while getopts ":p:c:" opt; do
 
         # This will handle the invalid options
         *)
-            echo "Invalid options: -$OPTARG"
+            echo "Invalid options: -$opt"
             echo "Usage: -p for installing packages, -c for setting up configurations"
             exit 1
             ;;
@@ -48,7 +50,7 @@ while getopts ":p:c:" opt; do
 done
 
 # If the user didn't provide anything:
-if [[ $OPTIND -eq 1 ]]; then
+if [ $OPTIND -eq 1 ]; then
     echo "Please provide either option -c, -p or both"
     exit 1
 fi
