@@ -16,11 +16,11 @@
 # USER_HOME="/home/${SUDO_USER:-$USER}" - still having issues
 
 # Trial 2
-USER_HOME="${SUDO_USER:+/home/$SUDO_USER}"
+#USER_HOME="${SUDO_USER:+/home/$SUDO_USER}"
 
 # I will user_home to /home/$sudo_user if sudo_user is set
 # and if not the code belown will fall back to $home if sudo_user is empty
- USER_HOME="${USER_HOME:-$HOME}"
+#USER_HOME="${USER_HOME:-$HOME}"
 
 # Trial 3
 # it was showing home/root/bin
@@ -28,18 +28,21 @@ USER_HOME="${SUDO_USER:+/home/$SUDO_USER}"
 # if its running as root, it will use the home directory of the user who ran sudo
 
 #USER_HOME="${SUDO_USER:-$USER}"
-echo "Using USER_HOME as: $USER_HOME"
 
+# -----------------------------------------------------------------------------------------------------------
+# Trial 4 lmao
 
+user_dir="${1:-$HOME}"
+echo "Using user_dir as: $user_dir"
 
 # Step 1: Git
 
 if command -v git &> /dev/null; then 
    # this will check whether git is installed and available in the system's path
    
-   if [ ! -d "/home/$USER_HOME/config_files" ]; then
+   if [ ! -d "$user_dir/config_files" ]; then
 
-	   git clone https://gitlab.com/cit2420/2420-as2-starting-files "/home/$USER_HOME/config_files"
+	   git clone https://gitlab.com/cit2420/2420-as2-starting-files "$user_dir/config_files"
    else
 	   echo "The config_files directory already exist"
    fi 
@@ -47,17 +50,19 @@ if command -v git &> /dev/null; then
 else 
 	echo "Your system does not have git installed, Installing git"
 
-	# this will check if pacman is installed 
+	# this will check if the system uses pacman
 	if command -v pacman &> /dev/null; then
 	
 		# if it is, it installs git 
 		sudo pacman -S git
 	else
+		# if they dont have pacman
 		echo "Error: Please install Git mmanually"
 		exit 1
 	fi
 
-	git clone https://gitlab.com/cit2420/2420-as2-starting-files "/home/$USER_HOME/config_files"
+	# will clone it even if we had to install git
+	git clone https://gitlab.com/cit2420/2420-as2-starting-files "$user_dir/config_files"
 fi 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -65,20 +70,20 @@ fi
  
  # Check if the bin and .config directories exists, create if it doesnt
  
- if [ ! -d "$USER_HOME/bin" ]; then
-	 mkdir "$USER_HOME/bin" #this will create the bin directory
+ if [ ! -d "$user_dir/bin" ]; then
+	 mkdir "$user_dir/bin" #this will create the bin directory
 	 echo "Created the bin directory"
  fi
 
- if [ ! -d " $USER_HOME/.config" ]; then
-	 mkdir "$USER_HOME/.config" #this will create the .config directory 
+ if [ ! -d " $user_dir/.config" ]; then
+	 mkdir "$user_dir/.config" #this will create the .config directory 
 	 echo "Created the config directory"
  fi 
 
 # ----------------------------------------------------------------------------------------------------------
 # Step 3: Listing all the files and directories inside the cloned repository
 #
-  content_files=$(find "/home/$USER_HOME/config_files" -maxdepth 1 -mindepth 1 -type d)
+  content_files=$(find "$user_dir/config_files" -maxdepth 1 -mindepth 1 -type d)
    # Im using find to search for the direcotries inside 'config_files
    	# -maxdepth 1 = will only search one level deep inside the direcetoy
 	# -mindepth 1 = will not include the root directory - skipping 'config_repo' 
@@ -98,24 +103,25 @@ fi
 	      continue
       fi
 
+      #based ont he directory name, it will set the correct target for the symlink
       case "$dir" in
 
 	 # so if the directory name is "bin" or "config", it will set the target
 	 # location to $HOME/bin or .config
 
           "bin")
-	  	target="$USER_HOME/bin" 
+	  	target="$user_dir/bin" 
 		;;
 
 	  "config")
-	        target="$USER_HOME/.config" 
+	        target="$user_dir/.config" 
 		;;
 
    	  "home")
 	   # This is a bit different if the directory name is "home", will set the 
 	   # target location to $HOME/.bashrc
 	   
-	   target="$USER_HOME.bashrc" # will set the target for the bin directory
+	   target="$user_dir/.bashrc" # will set the target for the bin directory
 		
 
 	       # Had issues saying it already exisited in my machine, so I did a 
@@ -140,7 +146,7 @@ fi
       # Now will create symlink for bin, config
 
       if [ ! -e "$target" ]; then 
-	      # checks if the symlink does not exits, creates it
+	      # checks if the symlink does not exists, it will create it
 
          ln -s "$content" "$target"
 	 # will create the symlink L
