@@ -7,8 +7,14 @@
 
 if command -v git &> /dev/null; then 
    # this will check whether git is installed and available in the system's path
+   
+   if [ ! -d "$HOME/config_files" ]; then
 
-	git clone https://gitlab.com/cit2420/2420-as2-starting-files ~/config_files
+	   git clone https://gitlab.com/cit2420/2420-as2-starting-files ~/config_files
+   else
+	   echo "The config_files directory already exist"
+   fi 
+
 else 
 	echo "Your system does not have git installed, Installing git"
 
@@ -38,7 +44,7 @@ fi
  if [ ! -d "$HOME/.config" ]; then
 	 mkdir "$HOME/.config" #this will create the .config directory 
 	 echo "Created the config directory"
- 
+ fi 
 
 # ----------------------------------------------------------------------------------------------------------
 # Step 3: Listing all the files and directories inside the cloned repository
@@ -56,6 +62,12 @@ fi
 
       # Im getting the direcotry name from the full path of the directory
       dir=$(basename "$content")
+
+      # had issues where it was showing ".git" is not a directory, I will jsut skip it
+
+      if [[ "$dir" == ".git" ]]; then
+	      continue
+      fi
 
       case "$dir" in
 
@@ -75,6 +87,12 @@ fi
 	   # target location to $HOME/.bashrc
 	   
 	       target="$HOME/.bashrc" # will set the target for the bin directory
+
+	       if [ -e "$target" ]; then
+		       echo "$target Already exist, removing it"
+		       rm -f "$target"
+		fi
+
 	       ln -s "$content/bashrc" "$target"
 	   # this would look like /home/username/config_files/home/bashrc
 	       continue
