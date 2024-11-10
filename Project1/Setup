@@ -1,4 +1,6 @@
-# System Setup Script 
+#!/bin/bash
+
+#Setup Script
 
 # -------------------------------------------------------------------------------------
 # Step 1: Command line Options
@@ -11,18 +13,33 @@
 
 	# The -p option will install the packages
   	p)
-	  bash ./Packages "$OPTARG"
-	  ;;
+	  # Previous code didnt have any error handling to see if the Configuration file exist or not
 
-	
+	  if [ -f "./Pakcages" ]; then
+	  	bash ./Packages "OPTARG" || { echo "Error running Packages Script"; exit 1; }
+	  else
+	        echo "Cannot find the Package script" 
+		exit 1
+	  fi 
+	   ;; 
+
 	# The -c option will install the Configuration
 	c)
-	  bash ./Configuration "$OPTARG"
+	   # Same with my -p code, it didnt have an error handling
+	  
+	  if [ -f "./Configuration" ]; then
+	  	bash ./Configuration "$OPTARG" || { echo "Error running Configuration script"; exit 1: }
+	  else
+	  	echo "Cannot find the Configuration script"
+		exit 1
 	  ;;
 
 
 	# This will hadle the invalid options
 	*)
+
+	 echo "Invalid options: -$OPTARG"
+	 echo "Usage: -p for installing packages, -c for setting up configurations"
 	 exit1
 	 ;;  
 

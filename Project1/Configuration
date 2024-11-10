@@ -54,7 +54,7 @@ else
 	if command -v pacman &> /dev/null; then
 	
 		# if it is, it installs git 
-		sudo pacman -S git
+		sudo pacman -S git 
 	else
 		# if they dont have pacman
 		echo "Error: Please install Git mmanually"
