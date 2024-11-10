@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Configuration Setup Scrip!
+# Configuration Setup Script!
 
 # ------------------------------------------------------------------------------------------------------------
 # Step 1: Git 
@@ -15,7 +15,7 @@ else
 	# this will check if pacman is installed 
 	if command -v pacman &> /dev/null; then
 	
-		# if it is, it installs git using pacman 
+		# if it is, it installs git 
 		sudo pacman -S git
 	else
 		echo "Error: Please install Git mmanually"
@@ -25,31 +25,43 @@ else
 	git clone https://gitlab.com/cit2420/2420-as2-starting-files ~/config_files
 fi 
 
+# ----------------------------------------------------------------------------------------------------------
+ # Step 2: Directories
+ 
+ # Check if the bin and .config directories exists, create if it doesnt
+ 
+ if [ ! -d "$HOME/bin" ]; then
+	 mkdir "$HOME/bin" #this will create the bin directory
+	 echo "Created the bin directory"
+ fi
+
+ if [ ! -d "$HOME/.config" ]; then
+	 mkdir "$HOME/.config" #this will create the .config directory 
+	 echo "Created the config directory"
+ 
 
 # ----------------------------------------------------------------------------------------------------------
-# Step 2: Listing all the files and directories inside the cloned repository
-
-
-   config_repo="$HOME/config_files"
-   # im setting confif_repo to the path of the cloned config files directory
-   # inside the user's home directory 
-
-   content_files=$(find "$config_repo" -maxdepth 1 -mindepth 1 -type d)
-   # Im using find to search for the direcotries inside 'config_repo'
+# Step 3: Listing all the files and directories inside the cloned repository
+#
+  content_files=$(find ~/config_files -maxdepth 1 -mindepth 1 -type d)
+   # Im using find to search for the direcotries inside 'config_files
    	# -maxdepth 1 = will only search one level deep inside the direcetoy
 	# -mindepth 1 = will not include the root directory - skipping 'config_repo' 
 
 # ------------------------------------------------------------------------------------------------------------
 
-# step 3: Connecting symbolic links to our files 
-
+# step 4: Connecting symbolic links to our files 
 
   for content in $content_files; do
 
-      #Here we are getting the abosolute path of the directory
+      # Im getting the direcotry name from the full path of the directory
       dir=$(basename "$content")
 
       case "$dir" in
+
+	 # so if the directory name is "bin" or "config", it will set the target
+	 # location to $HOME/bin or .config
+
           "bin")
 	  	target="$HOME/bin" # will set the target for the bin directory
 		;;
@@ -59,15 +71,26 @@ fi
 		;;
 
    	  "home")
+	   # This is a bit different if the directory name is "home", will set the 
+	   # target location to $HOME/.bashrc
+	   
 	       target="$HOME/.bashrc" # will set the target for the bin directory
 	       ln -s "$content/bashrc" "$target"
+	   # this would look like /home/username/config_files/home/bashrc
 	       continue
 	       ;;
+
+	   # if the directories does not match "bin", "config", or "home"
+
+	   *) 
+	      echo "Unknown directory: $dir"
+	      continue
+	      ;;
       esac
      
       # Now will create for bin, config
       if [ ! -e "$target" ]; then 
-	      # checks if the symlink already exist
+	      # checks if the symlink does not exits, creates it
 
          ln -s "$content" "$target"
 	 # will create the symlink 
