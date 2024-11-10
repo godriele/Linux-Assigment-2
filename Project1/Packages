@@ -29,16 +29,14 @@
 	if pacman -Q "$package" &> /dev/null; then
 	   echo "$package is already installed."
 	else
-	   echo "Installing $package"
-	   pacman -S --noconfirm "$package"
+	   echo "Inst:alling $package"
 	  
 	  # After installing, check for any errors
-	   if [ $? -eq 0 ]; then
-	       # $? basically holds the exit status of the last executed command
-	       # 0 = succes other else error 
-	      echo "$package installed"
+	   if sudo pacman -S --noconfirm "$package"; then
+	   	echo "$package installed successfully"
 	   else 
-	      echo "Error with installing tha packages"
+	   	echo "There was an error installing the packages"
+		exit1
 	   fi
 	fi
     done 
