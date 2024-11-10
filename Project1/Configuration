@@ -5,19 +5,27 @@
 # ------------------------------------------------------------------------------------------------------------
 # Step 1: Git 
 
+if command -v git &> /dev/null; then 
+   # this will check whether git is installed and available in the system's path
 
-   if [[ -e /bin/git ]]; then
-		
-	   # If you system has git installed it will clone the repository inside the config_files directory
+	git clone https://gitlab.com/cit2420/2420-as2-starting-files ~/config_files
+else 
+	echo "Your system does not have git installed, Installing git"
 
-	   git clone https://gitlab.com/cit2420/2420-as2-starting-files ~/config_files 
-	   echo "Your system has Git installed, Cloned the repository into config_files"
-   else     
-	   # git is not installed 
+	# this will check if pacman is installed 
+	if command -v pacman &> /dev/null; then
+	
+		# if it is, it installs git using pacman 
+		sudo pacman -S git
+	else
+		echo "Error: Please install Git mmanually"
+		exit 1
+	fi
 
-           echo "Your system does not have Git installed"
-	   exit 1
-   fi
+	git clone https://gitlab.com/cit2420/2420-as2-starting-files ~/config_files
+fi 
+
+
 # ----------------------------------------------------------------------------------------------------------
 # Step 2: Listing all the files and directories inside the cloned repository
 
@@ -59,3 +67,5 @@
          echo "Symlink already exists: $target"
       fi 
 done
+
+echo "Configuration was a success"
