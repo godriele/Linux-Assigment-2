@@ -12,9 +12,19 @@
 # THis will set USER_HOME to the real user's home, even if running with sudo
 #  Reference = The Linux Documentation Project - went through a lot of the pages, I looked for the sudo manuals
 
-USER_HOME="/home/${SUDO_USER:-$USER}" 
+# Trial1
+# USER_HOME="/home/${SUDO_USER:-$USER}" - still having issues
 
-# Step 1: Git 
+# Trial 2
+USER_HOME="${SUDO_USER:+/home/$SUDO_USER}"
+# I will user_home to /home/$sudo_user if sudo_user is set
+# and if not the code belown will fall back to $home if sudo_user is empty
+USER_HOME="${USER_HOME:-$HOME}"
+echo "Using USER_HOME as: $USER_HOME"
+
+
+
+# Step 1: Git
 
 if command -v git &> /dev/null; then 
    # this will check whether git is installed and available in the system's path
@@ -47,13 +57,13 @@ fi
  
  # Check if the bin and .config directories exists, create if it doesnt
  
- if [ ! -d "/home/$SUDO_USER/bin" ]; then
-	 mkdir "/home/$SUDO_USER/bin" #this will create the bin directory
+ if [ ! -d "$USER_HOME/bin" ]; then
+	 mkdir "$USER_HOME/bin" #this will create the bin directory
 	 echo "Created the bin directory"
  fi
 
- if [ ! -d "/home/$SUDO_USER/.config" ]; then
-	 mkdir "/home/$SUDO_USER/.config" #this will create the .config directory 
+ if [ ! -d " $USER_HOME/.config" ]; then
+	 mkdir "$USER_HOME/.config" #this will create the .config directory 
 	 echo "Created the config directory"
  fi 
 
@@ -86,18 +96,18 @@ fi
 	 # location to $HOME/bin or .config
 
           "bin")
-	  	target="/home/$SUDO_USER/bin" 
+	  	target="$USER_HOME/bin" 
 		;;
 
 	  "config")
-	        target="/home/$SUDO_USER/.config" 
+	        target="$USER_HOME/.config" 
 		;;
 
    	  "home")
 	   # This is a bit different if the directory name is "home", will set the 
 	   # target location to $HOME/.bashrc
 	   
-	       target="home/$SUDO_USER/.bashrc" # will set the target for the bin directory
+	   target="$USER_HOME.bashrc" # will set the target for the bin directory
 		
 
 	       # Had issues saying it already exisited in my machine, so I did a 
