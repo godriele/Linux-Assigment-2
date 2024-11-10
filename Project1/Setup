@@ -1,67 +1,57 @@
 #!/bin/bash
 
-#Setup Script
+# Setup Script
 
-# Before starting check if the script is run ass roo (EUID 0) or with sudo privileges
-
-if [ "EUID" -ne 0 ]; then
-	echo "Please run as or use 'sudo -E'."
-	exit 1
+# Before starting check if the script is run as root (EUID 0) or with sudo privileges
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run as root or use 'sudo -E'."
+    exit 1
 fi
 
 # -------------------------------------------------------------------------------------
 # Step 1: Command line Options
 
-  # This part will hnadle the user's input from the command line
-  # Will use 'getopts' to parse the command line options. 
+# This part will handle the user's input from the command line.
+# Will use 'getopts' to parse the command line options.
 
-  while getopts ":p:c:" opt; do
-     case "$opt" in
+while getopts ":p:c:" opt; do
+    case "$opt" in
+        # The -p option will install the packages
+        p)
+            # Check if the Packages script exists
+            if [ -f "./Packages" ]; then
+                bash ./Packages  || { echo "Error running Packages Script"; exit 1; }
+            else
+                echo "Cannot find the Package script"
+                exit 1
+            fi
+            ;;
 
-	# The -p option will install the packages
-  	p)
-	  # Previous code didnt have any error handling to see if the Configuration file exist or not
+        # The -c option will install the Configuration
+        c)
+            # Check if the Configuration script exists
+            if [ -f "./Configuration" ]; then
+                bash ./Configuration || { echo "Error running Configuration script"; exit 1; }
+            else
+                echo "Cannot find the Configuration script"
+                exit 1
+            fi
+            ;;
 
-	  if [ -f "./Pakcages" ]; then
-	  	bash ./Packages "OPTARG" || { echo "Error running Packages Script"; exit 1; }
-	  else
-	        echo "Cannot find the Package script" 
-		exit 1
-	  fi
-
-	   ;; 
-
-	# The -c option will install the Configuration
-	c)
-	   # Same with my -p code, it didnt have an error handling
-	  
-	  if [ -f "./Configuration" ]; then
-	  	bash ./Configuration "$OPTARG" || { echo "Error running Configuration script"; exit 1; }
-	  else
-	  	echo "Cannot find the Configuration script"
-		exit 1
-
-	  fi
-	  ;;
-
-
-	# This will hadle the invalid options
-	*)
-
-	 echo "Invalid options: -$OPTARG"
-	 echo "Usage: -p for installing packages, -c for setting up configurations"
-	 exit 1
-
-	 ;;  
-
+        # This will handle the invalid options
+        *)
+            echo "Invalid options: -$OPTARG"
+            echo "Usage: -p for installing packages, -c for setting up configurations"
+            exit 1
+            ;;
     esac
-   done
+done
 
-   # If the user didn't provide anything:
-
-   if [[ -z "$OPTARG" ]]; then
-     echo "Please provide either option -c, -p or both"
-     exit 1
-   fi
+# If the user didn't provide anything:
+if [[ $OPTIND -eq 1 ]]; then
+    echo "Please provide either option -c, -p or both"
+    exit 1
+fi
 
 # -----------------------------------------------------------------------------------
+
