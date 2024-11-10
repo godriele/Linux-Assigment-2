@@ -10,7 +10,7 @@ if command -v git &> /dev/null; then
    
    if [ ! -d "$HOME/config_files" ]; then
 
-	   git clone https://gitlab.com/cit2420/2420-as2-starting-files ~/config_files
+	   git clone https://gitlab.com/cit2420/2420-as2-starting-files $HOME/config_files
    else
 	   echo "The config_files directory already exist"
    fi 
@@ -28,7 +28,7 @@ else
 		exit 1
 	fi
 
-	git clone https://gitlab.com/cit2420/2420-as2-starting-files ~/config_files
+	git clone https://gitlab.com/cit2420/2420-as2-starting-files $HOME/config_files
 fi 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ fi
 # ----------------------------------------------------------------------------------------------------------
 # Step 3: Listing all the files and directories inside the cloned repository
 #
-  content_files=$(find ~/config_files -maxdepth 1 -mindepth 1 -type d)
+  content_files=$(find $HOME/config_files -maxdepth 1 -mindepth 1 -type d)
    # Im using find to search for the direcotries inside 'config_files
    	# -maxdepth 1 = will only search one level deep inside the direcetoy
 	# -mindepth 1 = will not include the root directory - skipping 'config_repo' 
@@ -75,11 +75,11 @@ fi
 	 # location to $HOME/bin or .config
 
           "bin")
-	  	target="$HOME/bin" # will set the target for the bin directory
+	  	target="$HOME/bin" 
 		;;
 
 	  "config")
-	        target="$HOME/.config" # will set the target for the bin directory
+	        target="$HOME/.config" 
 		;;
 
    	  "home")
@@ -99,14 +99,13 @@ fi
 	       ;;
 
 	   # if the directories does not match "bin", "config", or "home"
-
 	   *) 
 	      echo "Unknown directory: $dir"
 	      continue
 	      ;;
       esac
      
-      # Now will create for bin, config
+      # Now will create symlink for bin, config
       if [ ! -e "$target" ]; then 
 	      # checks if the symlink does not exits, creates it
 
