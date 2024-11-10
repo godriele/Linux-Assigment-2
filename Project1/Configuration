@@ -31,9 +31,13 @@ fi
 
 
    config_repo="$HOME/config_files"
+   # im setting confif_repo to the path of the cloned config files directory
+   # inside the user's home directory 
 
-   content_files=$(find "$config_repo" -maxdepth 1 -mindepth 1-type d)
-
+   content_files=$(find "$config_repo" -maxdepth 1 -mindepth 1 -type d)
+   # Im using find to search for the direcotries inside 'config_repo'
+   	# -maxdepth 1 = will only search one level deep inside the direcetoy
+	# -mindepth 1 = will not include the root directory - skipping 'config_repo' 
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -43,29 +47,35 @@ fi
   for content in $content_files; do
 
       #Here we are getting the abosolute path of the directory
-      dir=$(basename "$content_files")
+      dir=$(basename "$content")
 
       case "$dir" in
           "bin")
-	  	target="$HOME/bin"
+	  	target="$HOME/bin" # will set the target for the bin directory
 		;;
+
 	  "config")
-	        target="$HOME/.config"
+	        target="$HOME/.config" # will set the target for the bin directory
 		;;
+
    	  "home")
-	       target="$HOME/.bashrc"
-	        
+	       target="$HOME/.bashrc" # will set the target for the bin directory
 	       ln -s "$content/bashrc" "$target"
 	       continue
 	       ;;
       esac
      
+      # Now will create for bin, config
       if [ ! -e "$target" ]; then 
+	      # checks if the symlink already exist
+
          ln -s "$content" "$target"
+	 # will create the symlink 
 	 echo "created symlink: $target -> $content"
       else 
          echo "Symlink already exists: $target"
-      fi 
+      fi
+
 done
 
 echo "Configuration was a success"
