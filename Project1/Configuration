@@ -16,11 +16,20 @@
 # USER_HOME="/home/${SUDO_USER:-$USER}" - still having issues
 
 # Trial 2
-USER_HOME="${SUDO_USER:+/home/$SUDO_USER}"
+#USER_HOME="${SUDO_USER:+/home/$SUDO_USER}"
+
 # I will user_home to /home/$sudo_user if sudo_user is set
 # and if not the code belown will fall back to $home if sudo_user is empty
-USER_HOME="${USER_HOME:-$HOME}"
-echo "Using USER_HOME as: $USER_HOME"
+
+# USER_HOME="${USER_HOME:-$HOME}"
+
+# Trial 3
+# it was showing home/root/bin
+# Im setting USER_HOME to the home directory of the user running the script
+# if its running as root, it will use the home directory of the user who ran sudo
+
+USER_HOME="${SUDO_USER:-$USER}"
+echo "Using USER_HOME as: /home/$USER_HOME"
 
 
 
@@ -29,9 +38,9 @@ echo "Using USER_HOME as: $USER_HOME"
 if command -v git &> /dev/null; then 
    # this will check whether git is installed and available in the system's path
    
-   if [ ! -d "/home/$SUDO_USER/config_files" ]; then
+   if [ ! -d "/home/$USER_HOME/config_files" ]; then
 
-	   git clone https://gitlab.com/cit2420/2420-as2-starting-files /home/$SUDO_USER/config_files
+	   git clone https://gitlab.com/cit2420/2420-as2-starting-files "/home/$USER_HOME/config_files"
    else
 	   echo "The config_files directory already exist"
    fi 
@@ -49,7 +58,7 @@ else
 		exit 1
 	fi
 
-	git clone https://gitlab.com/cit2420/2420-as2-starting-files $HOME/config_files
+	git clone https://gitlab.com/cit2420/2420-as2-starting-files "/home/$USER_HOME/config_files"
 fi 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -70,7 +79,7 @@ fi
 # ----------------------------------------------------------------------------------------------------------
 # Step 3: Listing all the files and directories inside the cloned repository
 #
-  content_files=$(find /home/$SUDO_USER/config_files -maxdepth 1 -mindepth 1 -type d)
+  content_files=$(find "/home/$USER_HOME/config_files" -maxdepth 1 -mindepth 1 -type d)
    # Im using find to search for the direcotries inside 'config_files
    	# -maxdepth 1 = will only search one level deep inside the direcetoy
 	# -mindepth 1 = will not include the root directory - skipping 'config_repo' 
@@ -130,6 +139,7 @@ fi
       esac
      
       # Now will create symlink for bin, config
+
       if [ ! -e "$target" ]; then 
 	      # checks if the symlink does not exits, creates it
 

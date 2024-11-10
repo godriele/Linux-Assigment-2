@@ -1,0 +1,1 @@
+/home//config_files/home/bashrc
