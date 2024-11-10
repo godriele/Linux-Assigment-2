@@ -22,19 +22,23 @@
 #  5. Set the user's password
 
 
-
 # Create User Script
 
 
 # We have to make sure that the script is run with root priviliges
 
+check_rook() {
  if [[ $EUID -ne 0 ]]; then 
 :      # -ne is checking if its not equal to 0 then it does not have sudo privileges
      echo "Have to run this script with sudo"
      exit 1
 	
  fi 
+}
 
+# Check if th escript is run as root
+
+check_root
 
 # -----------------------------------Menu------------------------------------------------------
 
@@ -83,7 +87,7 @@
 	  # Option to specify the groups the user should belong to
 	  ;;
 
-	m) 
+	h) 
 	  echo "$Options"
 	  exit 0
 	  ;;
