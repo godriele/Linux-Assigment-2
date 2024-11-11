@@ -2,57 +2,21 @@
 
 # Configuration Setup Script!
 
-# ------------------------------------------------------------------------------------------------------------
-
-
- #* Had to change $HOME to $SUDO_USER because I was having issues that it would show as root 
- #  intead of home, it would be targeting the home directory of the user who ran sudo rather than root
-
-
-# THis will set USER_HOME to the real user's home, even if running with sudo
-#  Reference = The Linux Documentation Project - went through a lot of the pages, I looked for the sudo manuals
-
-# Trial1
-# USER_HOME="/home/${SUDO_USER:-$USER}" - still having issues
-
-# Trial 2
-#USER_HOME="${SUDO_USER:+/home/$SUDO_USER}"
-
-# I will user_home to /home/$sudo_user if sudo_user is set
-# and if not the code belown will fall back to $home if sudo_user is empty
-#USER_HOME="${USER_HOME:-$HOME}"
-
-# Trial 3
-# it was showing home/root/bin
-# Im setting USER_HOME to the home directory of the user running the script
-# if its running as root, it will use the home directory of the user who ran sudo
-
-#USER_HOME="${SUDO_USER:-$USER}"
-
-# -----------------------------------------------------------------------------------------------------------
-# Trial 4 lmao
-
 user_dir="${1:-$HOME}"
 echo "Using user_dir as: $user_dir"
 
 # Step 1: Git
-
 if command -v git &> /dev/null; then 
    # this will check whether git is installed and available in the system's path
-   
    if [ ! -d "$user_dir/config_files" ]; then
-
 	   git clone https://gitlab.com/cit2420/2420-as2-starting-files "$user_dir/config_files"
    else
 	   echo "The config_files directory already exist"
    fi 
-
 else 
 	echo "Your system does not have git installed, Installing git"
-
 	# this will check if the system uses pacman
 	if command -v pacman &> /dev/null; then
-	
 		# if it is, it installs git 
 		sudo pacman -S git 
 	else
@@ -60,7 +24,6 @@ else
 		echo "Error: Please install Git mmanually"
 		exit 1
 	fi
-
 	# will clone it even if we had to install git
 	git clone https://gitlab.com/cit2420/2420-as2-starting-files "$user_dir/config_files"
 fi 
@@ -69,7 +32,6 @@ fi
  # Step 2: Directories
  
  # Check if the bin and .config directories exists, create if it doesnt
- 
  if [ ! -d "$user_dir/bin" ]; then
 	 mkdir "$user_dir/bin" #this will create the bin directory
 	 echo "Created the bin directory"
@@ -89,49 +51,34 @@ fi
 	# -mindepth 1 = will not include the root directory - skipping 'config_repo' 
 
 # ------------------------------------------------------------------------------------------------------------
-
 # step 4: Connecting symbolic links to our files 
-
   for content in $content_files; do
-
-      # Im getting the direcotry name from the full path of the directory
+      # Im getting the directory name from the full path of the directory
       dir=$(basename "$content")
-
       # had issues where it was showing ".git" is not a directory, I will jsut skip it
-
       if [[ "$dir" == ".git" ]]; then
 	      continue
       fi
-
-      #based ont he directory name, it will set the correct target for the symlink
       case "$dir" in
-
 	 # so if the directory name is "bin" or "config", it will set the target
 	 # location to $HOME/bin or .config
-
           "bin")
 	  	target="$user_dir/bin" 
 		;;
-
 	  "config")
 	        target="$user_dir/.config" 
 		;;
-
    	  "home")
 	   # This is a bit different if the directory name is "home", will set the 
 	   # target location to $HOME/.bashrc
-	   
 	   target="$user_dir/.bashrc" # will set the target for the bin directory
 		
-
 	       # Had issues saying it already exisited in my machine, so I did a 
 	       # check if it already existed, and if does remove it
-
 	       if [ -e "$target" ]; then
 		       echo "$target Already exist, removing it"
 		       rm -f "$target"
 	       fi
-
 	       ln -s "$content/bashrc" "$target"
 	       continue
 	       ;;
@@ -144,10 +91,8 @@ fi
       esac
      
       # Now will create symlink for bin, config
-
       if [ ! -e "$target" ]; then 
 	      # checks if the symlink does not exists, it will create it
-
          ln -s "$content" "$target"
 	 # will create the symlink L
 	 echo "created symlink: $target -> $content"
@@ -156,5 +101,4 @@ fi
       fi
 
 done
-
 echo "Configuration was a success"
