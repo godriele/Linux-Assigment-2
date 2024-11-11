@@ -192,14 +192,15 @@ if [ -n "$groups" ]; then
     for group in "${group_array[@]}"; do
 
         # Check if group exists
-	#
-        if getent group "$group" > /dev/null 2>&1; then
+	
+        if grep -q  "$group" /etc/group then
 
             # If the group exists, add the user to the group
-            usermod -aG "$group" "$username" && echo "$username added to group $group"
+            echo "$username" | tee -a /etc/group > /dev/null
+	    echo "$usernmae added to group $group"
         else
             # If the group doesn't exist            
-	    echo "Error: Group '$group' does not exist."
+	    echo "Error: Group '$group' does not exis."
         fi
     done
 fi
