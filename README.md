@@ -27,11 +27,7 @@ Before running the scripts, make sure you have the following:
 - A Linux-based operating system (e.g., Arch Linux, Ubuntu, etc.)
 - `sudo` privileges — You will need administrator access to run the scripts.
 - **Git** installed — This is required to clone configuration files from a Git repository.
-
-### Installing Git (if it's not installed)
-
-If **Git** is not installed on your system, the script will attempt to install it using the default package manager (e.g., `pacman` for Arch Linux). If you encounter any issues with Git installation, please install it manually by following the instructions on the official Git website.
-
+- 
 ---
 
 ## How to Run the Scripts
