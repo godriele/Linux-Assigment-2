@@ -69,7 +69,7 @@ check_root
   # Getting User input options and handling them using getopts
   
   while getopts "s:mg:h" option; do
-     case $option in 
+     case "$option" in 
 
 	s) # Specify shell option
 	  user_shell=$OPTARG 
@@ -80,7 +80,6 @@ check_root
 	  home_dir=true 
 	  # option to create a home directory
 	  ;;
-
 
 	g) 
 	  groups=$OPTARG 
@@ -111,7 +110,7 @@ done
 
 # -------------------------Username---------------------------------------------------------
 
-shift $((OPTIND -1))
+shift $((OPTIND - 1))
 
 # Removes all the options from the positional parameters so that the usernama can be accessed 
 # as the first positional argument
@@ -135,6 +134,7 @@ fi
 
 # https://tldp.org/LDP/sag/html/adduser.html
 #https://www.geeksforgeeks.org/manually-add-a-user-without-tools-like-useradd-and-adduser-in-linux/
+
 # if the user types in -m 
 # this will create their home directory 
 
@@ -165,6 +165,8 @@ user() {
    fi
 
 }
+
+User
 # ------------------------Groups--------------------------------------------------------
 
 # Add the user to additional groups if they specify 
@@ -205,6 +207,7 @@ if [ -z $password ]; then
 	fi
 fi
 
+echo "$username:$password" | chpasswd
 
 # double check if it worked
 if [ $? -eq 0 ]; then
