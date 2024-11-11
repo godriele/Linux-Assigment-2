@@ -166,26 +166,25 @@ user() {
 
 }
 
-User
+user
 # ------------------------Groups--------------------------------------------------------
 
 # Add the user to additional groups if they specify 
-
 if [ -n "$groups" ]; then
     # -n will check if its non-empty
-
-    if usermod -aG "$groups" "$username"; then
-
-	# this will add the user to the specified group 
-	# and -aG will make sure the user is added without
-	# removing them from existing groups
-
-	    echo "$username was added to groups: $groups"
-    else
-	    echo "Error; failed to add $username to groups."
-	    exit 1
-   fi
-fi 
+    IFS=',' read -ra group_array <<< "$groups"  # Split groups by comma
+    
+    for group in "${group_array[@]}"; do
+        # Check if group exists
+        if getent group "$group" > /dev/null 2>&1; then
+            # If the group exists, add the user to the group
+            usermod -aG "$group" "$username" && echo "$username added to group $group"
+        else
+            # If the group doesn't exist            
+	    echo "Error: Group '$group' does not exist."
+        fi
+    done
+fi
 
 # Not 100% this is how bro wants us to do it so 
 # double check everything again when checking again 
