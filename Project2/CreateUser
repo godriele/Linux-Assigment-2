@@ -52,7 +52,7 @@ check_root
     echo " -g GROUPS - Groups to add the user into"
     echo " -m        - option menu"
 
-]
+}
 
 # Default values
 
@@ -63,15 +63,15 @@ check_root
   user_shell="/bin/bash"
   # The most common shell on Linux, 
 
-  password=""
-  # The users will be able to set their passwrod
+  groups="" 
+  # the group list to add users to 
 
   # Getting User input options and handling them using getopts
   
   while getopts "s:mg:h" option; do
      case $option in 
 
-	s) 
+	s) # Specify shell option
 	  user_shell=$OPTARG 
 	  # this will give the user the option to specify the shell
 	  ;;
@@ -88,7 +88,7 @@ check_root
 	  ;;
 
 	h) 
-	  echo "$Options"
+	  Option # if the users want to see the option menu 
 	  exit 0
 	  ;;
 	
@@ -102,6 +102,7 @@ check_root
 	*)
 	 echo "Invalid option -$OPTARG"
 	 # if the user put in an invalid option
+	 Option
 	 exit 1
 	 ;;
      
@@ -111,6 +112,7 @@ done
 # -------------------------Username---------------------------------------------------------
 
 shift $((OPTIND -1))
+
 # Removes all the options from the positional parameters so that the usernama can be accessed 
 # as the first positional argument
 
@@ -118,9 +120,11 @@ shift $((OPTIND -1))
 # the first positional argument will be the username 
 username=$1
 
+
 # Check if the username is valid (not empty)
 if [[ -z $username ]]; then
    echo "Please provide a username"
+   Option
    exit 1
 fi
 
@@ -129,15 +133,38 @@ fi
 
 # ------------------------Directoy-----------------------------------------------------------
 
+# https://tldp.org/LDP/sag/html/adduser.html
+#https://www.geeksforgeeks.org/manually-add-a-user-without-tools-like-useradd-and-adduser-in-linux/
 # if the user types in -m 
 # this will create their home directory 
 
-if [ "$home_dir" = true ]; then
-	mkdir "/home/$1"
-	cp -r /etc/skel/* /home/$1
-	echo "Home directory created for $1 at /home/$1"
-fi
+user() {
+   
+   if grep -q "$usernmae:" /etc/passwd; then
+	   # Check if the username is already in /etc/passwd so there wont be any duplication
+	echo "Error, User $username already exist"
+	exit 1
+   else 
+	# the new home directory path for the new user
+	home_dir="/home/$username"
 
+	#now adding the user entry to /etc/passwrd 
+	echo "$username:x:$new_UID:$GID:User Account:$home_dir:$user_shell" >> /etc/passwd
+
+        # adding group entry to /etc/group to create the user's main group
+        echo "$username:x:$GID:$username" >> /etc/group
+      
+	if [ "$home_dir" = true ]; then
+             	mkdir -p "$home_dir"
+	        cp -r /etc/skel/. "$home_dir"
+	        echo "Home directory created for $username at $home_dir"
+
+        fi
+	chown -R "$username" "$home_dir" 
+	# making sure that the new user has owner ship of their home directory
+   fi
+
+}
 # ------------------------Groups--------------------------------------------------------
 
 # Add the user to additional groups if they specify 
