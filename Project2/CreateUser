@@ -146,21 +146,33 @@ user() {
 	exit 1
    else 
 	# the new home directory path for the new user
-	home_dir="/home/$username"
+	home_dir_path="/home/$username"
+
+	# The script finds the new available User ID by looking throught the /etc/passwd file
+	# gitting the highest current UID, and adding it by 1
+	
+        new_UID=$(($(awk -F: '{if($3>max) max=$3} END {print max+1}' /etc/passwd)))
+
+	# it then uses this same UID as the same GROUP ID
+        GID=$new_UID  # We can use the same UID as GID for simplicity
 
 	#now adding the user entry to /etc/passwrd 
-	echo "$username:x:$new_UID:$GID:User Account:$home_dir:$user_shell" >> /etc/passwd
+	echo "$username:x:$new_UID:$GID:User Account:$home_dir_path:$user_shell" >> /etc/passwd
 
         # adding group entry to /etc/group to create the user's main group
         echo "$username:x:$GID:$username" >> /etc/group
       
 	if [ "$home_dir" = true ]; then
-             	mkdir -p "$home_dir"
-	        cp -r /etc/skel/. "$home_dir"
-	        echo "Home directory created for $username at $home_dir"
 
+	  if [ ! -d "$home_dir_path" ]; then
+
+             	mkdir -p "$home_dir_path"
+	        cp -r /etc/skel/. "$home_dir_path"
+	        echo "Home directory created for $username at $home_dir_path"
+
+	  fi 
         fi
-	chown -R "$username:$username" "$home_dir" 
+	chown -R "$username:$username" "$home_dir_path" 
 	echo "User $username has been created"
 
 	# making sure that the new user has owner ship of their home directory
@@ -173,12 +185,16 @@ user
 
 # Add the user to additional groups if they specify 
 if [ -n "$groups" ]; then
+
     # -n will check if its non-empty
     IFS=',' read -ra group_array <<< "$groups"  # Split groups by comma
     
     for group in "${group_array[@]}"; do
+
         # Check if group exists
+	#
         if getent group "$group" > /dev/null 2>&1; then
+
             # If the group exists, add the user to the group
             usermod -aG "$group" "$username" && echo "$username added to group $group"
         else
@@ -208,7 +224,6 @@ if [ -z $password ]; then
 	fi
 fi
 
-echo "$username:$password" | chpasswd
 
 # double check if it worked
 if [ $? -eq 0 ]; then
