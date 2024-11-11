@@ -3,7 +3,6 @@
 # Setup Script
 
 # Step 1: CHecking if the script is being run as root 
-
 # Before starting check if the script is run as root (EUID 0) or with sudo privileges
 # $EUID is 0 when running as root, so this will check if you have the correcet permissions
 #
@@ -14,9 +13,8 @@ fi
 
 # -------------------------------------------------------------------------------------
 # Step 2: Command line Options
-
 # This part will handle the user's input from the command line.
-# Will use 'getopts' to handle the options (like -p or -c) the user gives when running the script
+# Will use 'getopts' to handle the options (like -p or -c) 
 #
 while getopts "pc" opt; do
     case "$opt" in
@@ -25,15 +23,13 @@ while getopts "pc" opt; do
             # Check if the Packages script exists
             if [ -f "./Packages" ]; then
                 bash ./Packages || { echo "Error running Packages Script"; exit 1; }
-		# it runs the script , but if the running script fails
+		# it runs the script, but it if fails show error
             else
 		    # if it dont exist
                 echo "Cannot find the Package script"
                 exit 1
             fi
             ;;
-
-
 
         # The -c option will install the Configuration
         c)
@@ -48,7 +44,6 @@ while getopts "pc" opt; do
             ;;
 
         *) # if the user enters a invalid option
-
             echo "Invalid options: -$opt"
             echo "Usage: -p for installing packages, -c for setting up configurations"
             exit 1
@@ -60,13 +55,10 @@ done
 
 # Step 3: Check if no options were provided
 # $OPTIND will tells which option was processed last
-
 # if its 1 then it means no option was provided 
 # If the user didn't provide anything:
 if [ $OPTIND -eq 1 ]; then
     echo "Please provide either option -c, -p or both"
     exit 1
 fi
-
-# -----------------------------------------------------------------------------------
 
