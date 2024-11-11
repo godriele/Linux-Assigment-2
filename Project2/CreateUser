@@ -11,8 +11,7 @@
 #  that matches their username
 #
 #  5. Set a Password: Use the `psswd` utility to craeet a password for the new user
-#
-#
+
 #  Using getopts:
 #  1. Ask for the user information
 #  2. Create the user, specify shell and set the home directory
@@ -21,9 +20,7 @@
 #  4. Prompt user for additional groups they want to be a part of
 #  5. Set the user's password
 
-
 # Create User Script
-
 
 # We have to make sure that the script is run with root priviliges
 
@@ -35,90 +32,65 @@ check_root() {
 	
  fi 
 }
-
-# Check if th escript is run as root
-
 check_root
-
 # -----------------------------------Menu------------------------------------------------------
-
 # Menu Function
-
-
  Options () {
     echo "Options"
     echo " -s SHELL  - Specify the default shell for the user"
     echo " -m        - Create a home directory for the new user"
     echo " -g GROUPS - Groups to add the user into"
     echo " -m        - option menu"
-
 }
 
 # Default values
-
   home_dir=false 
   # Setting this to false so that the home directory should not be created unless the users sets it
   # using the -m option 
-
   user_shell="/bin/bash"
   # The most common shell on Linux, 
-
   groups="" 
   # the group list to add users to 
-
-  # Getting User input options and handling them using getopts
   
   while getopts "s:mg:h" option; do
      case "$option" in 
-
 	s) # Specify shell option
 	  user_shell=$OPTARG 
 	  # this will give the user the option to specify the shell
 	  ;;
-
 	m) 
 	  home_dir=true 
 	  # option to create a home directory
 	  ;;
-
 	g) 
 	  groups=$OPTARG 
 	  # Option to specify the groups the user should belong to
 	  ;;
-
 	h) 
 	  Option # if the users want to see the option menu 
 	  exit 0
 	  ;;
-	
 	:)
 	 echo "Option -$OPTARG needs an argument"
 	 # If the user left the option empty
 	 exit 1
 	 ;;
-
-
 	*)
 	 echo "Invalid option -$OPTARG"
 	 # if the user put in an invalid option
 	 Option
 	 exit 1
 	 ;;
-     
     esac
 done
 
 # -------------------------Username---------------------------------------------------------
 
 shift $((OPTIND - 1))
-
 # Removes all the options from the positional parameters so that the usernama can be accessed 
 # as the first positional argument
-
-
 # the first positional argument will be the username 
 username=$1
-
 
 # Check if the username is valid (not empty)
 if [[ -z $username ]]; then
@@ -128,18 +100,13 @@ if [[ -z $username ]]; then
 fi
 
 ## * Double chcek not hundred percent sure if we supposed to this 
-
-
 # ------------------------Directory-----------------------------------------------------------
-
 # https://tldp.org/LDP/sag/html/adduser.html
 #https://www.geeksforgeeks.org/manually-add-a-user-without-tools-like-useradd-and-adduser-in-linux/
-
 # if the user types in -m 
 # this will create their home directory 
 
 user() {
-   
    if grep -q "$username:" /etc/passwd; then
 	   # Check if the username is already in /etc/passwd so there wont be any duplication
 	echo "Error, User $username already exist"
@@ -150,98 +117,70 @@ user() {
 
 	# The script finds the new available User ID by looking throught the /etc/passwd file
 	# gitting the highest current UID, and adding it by 1
-	
         new_UID=$(($(awk -F: '{if($3>max) max=$3} END {print max+1}' /etc/passwd)))
-
 	# it then uses this same UID as the same GROUP ID
-        GID=$new_UID  # We can use the same UID as GID for simplicity
+        GID=$new_UID 
 
 	#now adding the user entry to /etc/passwrd 
 	echo "$username:x:$new_UID:$GID:User Account:$home_dir_path:$user_shell" >> /etc/passwd
-
         # adding group entry to /etc/group to create the user's main group
         echo "$username:x:$GID:$username" >> /etc/group
       
 	if [ "$home_dir" = true ]; then
-
 	  if [ ! -d "$home_dir_path" ]; then
-
              	mkdir -p "$home_dir_path"
 	        cp -r /etc/skel/. "$home_dir_path"
 	        echo "Home directory created for $username at $home_dir_path"
-
 	  fi 
         fi
 	chown -R "$username:$username" "$home_dir_path" 
 	echo "User $username has been created"
-
 	# making sure that the new user has owner ship of their home directory
    fi
-
 }
-
 user
 # ------------------------Groups--------------------------------------------------------
 
 # Add the user to additional groups if they specify 
-
 if [ -n "$groups" ]; then
-      
     IFS=',' read -ra group_array <<< "$groups"
     # Split the 'groups' string by commas into an array called 'group_array'
-    
     for group in "${group_array[@]}"; do
-               
         if grep -q "$group" /etc/group; then
             # Check if the group exists in the system 
-	    
             # If the group exists, add the user to the group by updating the /etc/group file
             sed -i "/^$group:/s/$/$username/" /etc/group
             echo "$username added to group $group."
-        else
-                        
+        else       
             # Create the new group and add it to the /etc/group file
             echo "$group:x:$GID:$group" >> /etc/group
-
             # Add the user to the newly created group by updating the /etc/group file
             sed -i "/^$group:/s/$/$username/" /etc/group
-
             echo "Group '$group' did not exist, created and added user $username."
         fi
     done
 fi
 
-
 # Not 100% this is how bro wants us to do it so 
 # double check everything again when checking again 
 
 # ------------------------Password-----------------------------------------------------
-
 # since we declared the password is empty 
 # I set the password if not provided as an argument
-
 if [ -z $password ]; then
-
 	echo "Enter a password for the user $username: "
 	read -s password
 	# -s will prevent the input from being displayed on the terminal
-	
 	if [ -z $password ]; then
 		echo "Error: Password is require"
 		exit 1
 	fi
 fi
-
-
 # double check if it worked
 if [ $? -eq 0 ]; then
      # checks if the last executed command worked (0 = success)
-
 	echo "Password for $username has been successfully set" 
 else 
 	echo "Error: failed to set the password for $username"
 	exit 1
 fi
-
-
-# -------------------------------------------------------------------------------------
