@@ -1,29 +1,7 @@
 #!/bin/bash
-
-# Goal: Create a new script to automatically add a new user to your system
-#  1. Specify the Shell:
-#  2. Create a Home directory: Set up a personal home directory for the new user
-#
-#  3. Copy Default Files: copy default settings and files from `/etc/skel` to the
-#  new user's home directory
-#  
-#  4. Add to Groups: Add the new user to specified groups, including a primary group
-#  that matches their username
-#
-#  5. Set a Password: Use the `psswd` utility to craeet a password for the new user
-
-#  Using getopts:
-#  1. Ask for the user information
-#  2. Create the user, specify shell and set the home directory
-#  3. Copy default configuration from a system directory to new user home 
-#  - option without colon )if its three)
-#  4. Prompt user for additional groups they want to be a part of
-#  5. Set the user's password
-
 # Create User Script
 
 # We have to make sure that the script is run with root priviliges
-
 check_root() {
  if [[ $EUID -ne 0 ]]; then 
 :      # -ne is checking if its not equal to 0 then it does not have sudo privileges
@@ -48,7 +26,6 @@ check_root
   # Setting this to false so that the home directory should not be created unless the users sets it
   # using the -m option 
   user_shell="/bin/bash"
-  # The most common shell on Linux, 
   groups="" 
   # the group list to add users to 
   
@@ -85,7 +62,6 @@ check_root
 done
 
 # -------------------------Username---------------------------------------------------------
-
 shift $((OPTIND - 1))
 # Removes all the options from the positional parameters so that the usernama can be accessed 
 # as the first positional argument
@@ -140,7 +116,6 @@ user() {
 }
 user
 # ------------------------Groups--------------------------------------------------------
-
 # Add the user to additional groups if they specify 
 if [ -n "$groups" ]; then
     IFS=',' read -ra group_array <<< "$groups"
