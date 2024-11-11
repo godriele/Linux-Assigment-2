@@ -1,0 +1,28 @@
+# All the basic commands just used google 
+
+# Creating/Using Symbolic links
+https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/
+https://greenwebpage.com/community/how-to-create-and-remove-symbolic-links-in-linux/?amp=1&gad_source=1&gbraid=0AAAAADQ5TuohqmDbuSD43AVrU88XDM4tm&gclid=Cj0KCQiA0MG5BhD1ARIsAEcZtwTY51_C4Ae0kRi6aji6svFGcxjoGdiJZPqGg0xkXrOQ7HeDNUvTZD4aAkD8EALw_wcB
+
+# Using Getopts
+https://www.geeksforgeeks.org/getopts-command-in-linux-with-examples/
+https://kodekloud.com/blog/bash-getopts/
+## Optarg
+https://stackoverflow.com/questions/36247416/how-to-use-optarg-on-getopts
+
+
+# Group Management
+https://www.geeksforgeeks.org/group-management-in-linux/
+
+
+# Files and Directories
+https://contabo.com/blog/linux-navigation-and-file-management/
+
+# If statements
+https://www.geeksforgeeks.org/bash-scripting-if-statement/
+
+# Mindepth and Maxdepth
+https://www.tutorialspoint.com/mindepth-and-maxdepth-in-linux-find-command-for-limiting-search-to-a-specific-directory#:~:text=Max%20depth%20defines%20the%20maximum,within%20a%20complicated%20directory%20structure.
+
+#pacman
+https://wiki.archlinux.org/title/Pacman
