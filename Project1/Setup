@@ -7,7 +7,7 @@
 # $EUID is 0 when running as root, so this will check if you have the correcet permissions
 #
 if [ "$EUID" -ne 0 ]; then
-    echo "Please run as root or use 'sudo -E'."
+    echo "Please run as root"
     exit 1
 fi
 
