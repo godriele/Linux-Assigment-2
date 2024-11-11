@@ -184,26 +184,33 @@ user
 # ------------------------Groups--------------------------------------------------------
 
 # Add the user to additional groups if they specify 
-if [ -n "$groups" ]; then
 
-    # -n will check if its non-empty
-    IFS=',' read -ra group_array <<< "$groups"  # Split groups by comma
+if [ -n "$groups" ]; then
+      
+    IFS=',' read -ra group_array <<< "$groups"
+    # Split the 'groups' string by commas into an array called 'group_array'
     
     for group in "${group_array[@]}"; do
-
-        # Check if group exists
-	
-        if grep -q  "$group" /etc/group then
-
-            # If the group exists, add the user to the group
-            echo "$username" | tee -a /etc/group > /dev/null
-	    echo "$usernmae added to group $group"
+               
+        if grep -q "$group" /etc/group; then
+            # Check if the group exists in the system 
+	    
+            # If the group exists, add the user to the group by updating the /etc/group file
+            sed -i "/^$group:/s/$/$username/" /etc/group
+            echo "$username added to group $group."
         else
-            # If the group doesn't exist            
-	    echo "Error: Group '$group' does not exis."
+                        
+            # Create the new group and add it to the /etc/group file
+            echo "$group:x:$GID:$group" >> /etc/group
+
+            # Add the user to the newly created group by updating the /etc/group file
+            sed -i "/^$group:/s/$/$username/" /etc/group
+
+            echo "Group '$group' did not exist, created and added user $username."
         fi
     done
 fi
+
 
 # Not 100% this is how bro wants us to do it so 
 # double check everything again when checking again 
