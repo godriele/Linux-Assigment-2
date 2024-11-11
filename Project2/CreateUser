@@ -130,7 +130,7 @@ fi
 ## * Double chcek not hundred percent sure if we supposed to this 
 
 
-# ------------------------Directoy-----------------------------------------------------------
+# ------------------------Directory-----------------------------------------------------------
 
 # https://tldp.org/LDP/sag/html/adduser.html
 #https://www.geeksforgeeks.org/manually-add-a-user-without-tools-like-useradd-and-adduser-in-linux/
@@ -140,7 +140,7 @@ fi
 
 user() {
    
-   if grep -q "$usernmae:" /etc/passwd; then
+   if grep -q "$username:" /etc/passwd; then
 	   # Check if the username is already in /etc/passwd so there wont be any duplication
 	echo "Error, User $username already exist"
 	exit 1
@@ -160,7 +160,9 @@ user() {
 	        echo "Home directory created for $username at $home_dir"
 
         fi
-	chown -R "$username" "$home_dir" 
+	chown -R "$username:$username" "$home_dir" 
+	echo "User $username has been created"
+
 	# making sure that the new user has owner ship of their home directory
    fi
 
